@@ -1,0 +1,22 @@
+{
+  "name": "tpk-bitung-backend",
+  "version": "1.0.0",
+  "description": "Backend - Sistem Penjadwalan PT Pelindo Petikemas TPK Bitung",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "reset-big-admin": "node scripts/reset-big-admin.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.9.7",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
