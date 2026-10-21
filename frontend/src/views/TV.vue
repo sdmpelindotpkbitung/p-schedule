@@ -134,57 +134,65 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import axios from "axios";
 
-// ── Data ─────────────────────────────────────────────────────
+// Data
 const hariIni = ref([]);
 const akanDatang = ref([]);
+const slides = ref([]);
+const currentSlideIndex = ref(0);
 const loading = ref(true);
 const jam = ref("");
+const nowHhmm = ref(""); 
+const tick = ref(0);
 
-// ── Nama hari & bulan Indonesia ──────────────────────────────
 const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-const BULAN = [
-  "Januari",
-  "Februari",
-  "Maret",
-  "April",
-  "Mei",
-  "Juni",
-  "Juli",
-  "Agustus",
-  "September",
-  "Oktober",
-  "November",
-  "Desember",
-];
+const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
 const now = new Date();
 const hariHariIni = ref(HARI[now.getDay()]);
-const tanggalHariIni = ref(
-  `${now.getDate()} ${BULAN[now.getMonth()]} ${now.getFullYear()}`,
-);
+const tanggalHariIni = ref(`${now.getDate()} ${BULAN[now.getMonth()]} ${now.getFullYear()}`);
 
-// ── Jam real-time ─────────────────────────────────────────────
 const updateJam = () => {
   const d = new Date();
-  jam.value = d.toLocaleTimeString("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  jam.value = d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  nowHhmm.value = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  
+  // Perbarui tanggal agar otomatis berganti saat lewat tengah malam
+  hariHariIni.value = HARI[d.getDay()];
+  tanggalHariIni.value = `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
 };
 
-// ── Fetch data ────────────────────────────────────────────────
 const fetchData = async () => {
   try {
-    const [r1, r2] = await Promise.all([
+    // 1. Buat format YYYY-MM-DD berdasarkan waktu lokal komputer/TV secara presisi
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    // 2. Tarik semua data dari backend
+    const [r1, r2, r3] = await Promise.all([
       axios.get("/api/jadwal/tv/hari-ini"),
       axios.get("/api/jadwal/tv/akan-datang"),
+      axios.get("/api/tv/slides").catch(() => ({ data: [] }))
     ]);
-    hariIni.value = r1.data;
-    akanDatang.value = r2.data;
+
+    // 3. Gabungkan data backend yang zona waktunya meleset
+    const combinedJadwal = [...r1.data, ...r2.data];
+
+    // 4. Pisahkan ulang (Filter) secara akurat menggunakan waktu lokal TV
+    hariIni.value = combinedJadwal
+      .filter(evt => evt.tanggal === todayStr)
+      .sort((a, b) => a.jam_mulai.localeCompare(b.jam_mulai));
+
+    akanDatang.value = combinedJadwal
+      .filter(evt => evt.tanggal > todayStr)
+      .sort((a, b) => a.tanggal.localeCompare(b.tanggal) || a.jam_mulai.localeCompare(b.jam_mulai));
+
+    slides.value = r3.data;
   } catch (e) {
     console.error("TV fetch error:", e);
   } finally {
@@ -192,38 +200,49 @@ const fetchData = async () => {
   }
 };
 
-// ── Status jadwal ─────────────────────────────────────────────
-const isActive = (evt) => {
-  const now = new Date();
-  const hhmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-  return hhmm >= evt.jam_mulai && hhmm < evt.jam_selesai;
-};
 const isDone = (evt) => {
-  const now = new Date();
-  const hhmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-  return hhmm >= evt.jam_selesai;
+  return nowHhmm.value >= evt.jam_selesai;
 };
 
-// ── Format tanggal akan datang ────────────────────────────────
+const isActive = (evt) => {
+  return nowHhmm.value >= evt.jam_mulai && nowHhmm.value < evt.jam_selesai;
+};
+
+const isIdleMode = computed(() => {
+  if (loading.value) return false;
+  if (hariIni.value.length === 0) return true;
+  return hariIni.value.every(evt => isDone(evt));
+});
+
 const formatTanggal = (str) => {
   if (!str) return "";
   const [y, m, d] = str.split("-");
   const dt = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-  const hari = HARI[dt.getDay()];
-  return `${hari}, ${parseInt(d)} ${BULAN[parseInt(m) - 1]}`;
+  return `${HARI[dt.getDay()]}, ${parseInt(d)} ${BULAN[parseInt(m) - 1]}`;
 };
 
-// ── Timers ────────────────────────────────────────────────────
-let jamInterval, fetchInterval;
+let jamInterval, fetchInterval, slideInterval;
+
+const startSlideshow = () => {
+  slideInterval = setInterval(() => {
+    if (slides.value.length > 0) {
+      currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length;
+      tick.value++; 
+    }
+  }, 5000); 
+};
+
 onMounted(() => {
   updateJam();
-  fetchData();
+  fetchData().then(() => startSlideshow());
   jamInterval = setInterval(updateJam, 1000);
-  fetchInterval = setInterval(fetchData, 60000); // refresh tiap 1 menit
+  fetchInterval = setInterval(fetchData, 60000); // Sinkronisasi API tiap 1 menit
 });
+
 onUnmounted(() => {
   clearInterval(jamInterval);
   clearInterval(fetchInterval);
+  clearInterval(slideInterval);
 });
 </script>
 
