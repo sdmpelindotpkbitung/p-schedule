@@ -415,7 +415,7 @@ onUnmounted(() => {
 .idle-scroll-viewport { flex: 1; overflow: hidden; position: relative; mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); }
 .idle-scroll-content { display: flex; flex-direction: column; gap: 16px; position: absolute; width: 100%; padding-right: 10px;}
 
-.scrolling-up { animation: scroll-up 35s linear infinite; }
+.scrolling-up { animation: scroll-up 50s linear infinite; }
 @keyframes scroll-up { 0% { transform: translateY(80vh); } 100% { transform: translateY(-100%); } }
 
 .idle-card { background: rgba(255, 255, 255, 0.15); border-radius: 16px; padding: 16px; border-left: 4px solid #38bdf8; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
