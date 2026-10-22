@@ -1,91 +1,95 @@
 <template>
-  <div
-    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-navy to-navy-mid px-4"
-  >
+  <div class="min-h-screen flex items-center justify-center bg-transparent px-4 fade-in">
     <div class="w-full max-w-sm">
-      <!-- Card -->
-      <div class="card p-10">
+      <!-- Glassmorphism Card -->
+      <div class="glass-card p-10">
         <!-- Logo -->
-        <img
-          src="/images/logo.png"
-          alt="Logo P-Schedule"
-          class="w-8 h-8 rounded-lg object-contain shrink-0 mb-5"
-        />
+        <div class="flex justify-center mb-6">
+          <div class="bg-white/80 p-3 rounded-2xl shadow-sm border border-white/50">
+            <img
+              src="/images/logo.png"
+              alt="Logo P-Schedule"
+              class="w-12 h-12 object-contain shrink-0"
+            />
+          </div>
+        </div>
 
-        <h1 class="font-display text-xl font-semibold text-navy mb-1">
-          Selamat Datang
-        </h1>
-        <p class="text-xs text-gray-400 mb-7">
-          Sistem Penjadwalan - PT Pelindo Petikemas TPK Bitung
-        </p>
+        <div class="text-center mb-8">
+          <h1 class="font-display text-2xl font-bold text-navy mb-1 drop-shadow-sm">
+            Selamat Datang
+          </h1>
+          <p class="text-xs font-medium text-gray-600">
+            Sistem Penjadwalan - PT Pelindo Petikemas TPK Bitung
+          </p>
+        </div>
 
         <!-- Error -->
         <transition name="fade">
           <div
             v-if="error"
-            class="flex items-start gap-2.5 bg-danger-light border-l-4 border-danger rounded-lg px-4 py-3 mb-5 text-sm text-danger"
+            class="flex items-start gap-2.5 bg-red-50/90 backdrop-blur-sm border border-red-200 rounded-xl px-4 py-3 mb-6 text-sm font-bold text-red-600 shadow-sm"
           >
             <span class="mt-0.5 shrink-0">⚠</span>
             <span>{{ error }}</span>
           </div>
         </transition>
 
-        <!-- Form -->
-        <div class="space-y-4">
-          <div>
-            <label class="form-label">Username</label>
-            <input
-              v-model="form.username"
-              class="form-control"
-              placeholder="Masukkan username"
-              autocomplete="username"
-              @keyup.enter="doLogin"
-            />
+        <!-- Form menggunakan @submit.prevent agar halaman tidak refresh -->
+        <form @submit.prevent="doLogin">
+          <div class="space-y-5">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Username</label>
+              <input
+                v-model="form.username"
+                class="glass-input"
+                placeholder="Masukkan username"
+                autocomplete="username"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Password</label>
+              <input
+                v-model="form.password"
+                type="password"
+                class="glass-input"
+                placeholder="Masukkan password"
+                autocomplete="current-password"
+              />
+            </div>
           </div>
-          <div>
-            <label class="form-label">Password</label>
-            <input
-              v-model="form.password"
-              type="password"
-              class="form-control"
-              placeholder="Masukkan password"
-              autocomplete="current-password"
-              @keyup.enter="doLogin"
-            />
-          </div>
-        </div>
 
-        <button
-          class="btn-primary w-full justify-center mt-6 py-2.5 text-base"
-          :disabled="loading"
-          @click="doLogin"
-        >
-          <svg
-            v-if="loading"
-            class="animate-spin w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
+          <button
+            type="submit"
+            class="btn-primary w-full flex items-center justify-center mt-8 py-3 text-base"
+            :disabled="loading"
           >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            />
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v8z"
-            />
-          </svg>
-          <span>{{ loading ? "Memproses..." : "Masuk" }}</span>
-        </button>
+            <svg
+              v-if="loading"
+              class="animate-spin w-5 h-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8z"
+              />
+            </svg>
+            <span>{{ loading ? "Memproses..." : "Masuk" }}</span>
+          </button>
+        </form>
       </div>
 
       <!-- Footer -->
-      <p class="text-center text-xs text-white/30 mt-6">
+      <p class="text-center text-xs font-medium text-white/70 drop-shadow-md mt-8">
         PT Pelindo Petikemas TPK Bitung &copy; {{ new Date().getFullYear() }}
       </p>
     </div>
@@ -122,3 +126,49 @@ const doLogin = async () => {
   }
 };
 </script>
+
+<style scoped>
+/* ── Transisi ── */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* ── Glassmorphism ── */
+.glass-card {
+  @apply bg-white/85 backdrop-blur-2xl border border-white/60 shadow-[0_15px_40px_rgb(0,0,0,0.2)] rounded-3xl relative overflow-hidden;
+}
+
+/* Sedikit efek pendaran di ujung kartu */
+.glass-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-25deg);
+  animation: shine 6s infinite;
+}
+@keyframes shine {
+  0% { left: -100%; }
+  20% { left: 200%; }
+  100% { left: 200%; }
+}
+
+/* ── Input & Buttons ── */
+.glass-input {
+  @apply bg-white/60 border border-white/50 text-gray-900 font-medium rounded-xl focus:ring-2 focus:ring-navy/50 focus:border-navy focus:bg-white block w-full p-3.5 shadow-inner transition-all;
+}
+
+.btn-primary {
+  @apply font-bold rounded-xl bg-navy/90 text-white shadow-lg shadow-navy/30 hover:bg-navy hover:scale-[1.02] active:scale-95 transition-all backdrop-blur-sm border border-navy/50;
+}
+</style>

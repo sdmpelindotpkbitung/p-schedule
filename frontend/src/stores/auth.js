@@ -17,12 +17,17 @@ export const useAuthStore = defineStore("auth", () => {
 
   // ── Actions ───────────────────────────────────────────────
   const login = async (username, password) => {
-    const res = await authAPI.login({ username, password });
-    token.value = res.data.token;
-    user.value = res.data.user;
-    localStorage.setItem("tpk_token", token.value);
-    localStorage.setItem("tpk_user", JSON.stringify(user.value));
-    return res.data;
+    try {
+      const res = await authAPI.login({ username, password });
+      token.value = res.data.token;
+      user.value = res.data.user;
+      localStorage.setItem("tpk_token", token.value);
+      localStorage.setItem("tpk_user", JSON.stringify(user.value));
+      return res.data;
+    } catch (error) {
+      // INI WAJIB: Lempar error ke Login.vue agar bisa ditampilkan pesannya
+      throw error;
+    }
   };
 
   const logout = () => {

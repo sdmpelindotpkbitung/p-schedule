@@ -9,20 +9,28 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("tpk_token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
+  
+  // Hapus header JSON jika sedang mengirim file (FormData)
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+  
   return config;
 });
 
 // ── Handle 401 (token expired) → redirect ke login ───────────
 api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem("tpk_token");
-      localStorage.removeItem("tpk_user");
-      window.location.href = "/login";
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      if (!error.config.url.includes('/login')) {
+         localStorage.removeItem("tpk_token");
+         localStorage.removeItem("tpk_user");
+         window.location.reload(); 
+      }
     }
-    return Promise.reject(err);
-  },
+    return Promise.reject(error);
+  }
 );
 
 // ══════════════════════════════════════════════════════════════
@@ -57,7 +65,7 @@ export const ruanganAPI = {
 // JADWAL
 // ══════════════════════════════════════════════════════════════
 export const jadwalAPI = {
-  getAll: (params) => api.get("/jadwal", { params }), // { bulan, tanggal }
+  getAll: (params) => api.get("/jadwal", { params }), 
   getManaged: () => api.get("/jadwal/kelolaan"),
   getById: (id) => api.get(`/jadwal/${id}`),
   create: (data) => api.post("/jadwal", data),

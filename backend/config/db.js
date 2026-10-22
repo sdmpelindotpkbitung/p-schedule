@@ -7,13 +7,23 @@ const pool = new Pool({
   user:     process.env.DB_USER,    
   password: process.env.DB_PASSWORD, 
   database: process.env.DB_NAME,
-  // Supabase mewajibkan koneksi SSL
+  
+  // Konfigurasi wajib untuk Supabase
   ssl: {
     rejectUnauthorized: false
   },
-  max: 10, // Sama dengan connectionLimit di MySQL
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  
+  max: 10, 
+  idleTimeoutMillis: 10000,        // Tutup koneksi jika nganggur 10 detik
+  connectionTimeoutMillis: 10000,  // Waktu maksimal untuk mencoba connect
+  
+  // ── TAMBAHKAN BARIS INI ──
+  keepAlive: true, // Mengirim ping berkala agar Supabase tidak memutus koneksi
+});
+
+// Penangkap error agar server tidak crash saat koneksi idle terputus
+pool.on('error', (err, client) => {
+  console.error('⚠️ Koneksi idle terputus dari Supabase (ini wajar):', err.message);
 });
 
 // Test koneksi saat pertama kali diload

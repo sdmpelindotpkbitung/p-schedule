@@ -1,50 +1,56 @@
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col font-sans">
     <Topbar />
+    
     <main class="flex-1 max-w-[1000px] w-full mx-auto px-6 py-7">
-      <div class="flex items-start justify-between mb-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 class="font-display font-semibold text-navy text-2xl">
+          <h1 class="font-display font-bold text-navy text-3xl drop-shadow-sm">
             Anggota Divisi
           </h1>
-          <p class="text-sm text-gray-500 mt-1">
+          <p class="text-sm font-medium text-gray-700 mt-1 bg-white/40 px-3 py-1 rounded-full backdrop-blur-sm border border-white/40 w-fit">
             Staff pada divisi {{ auth.divisionName }}
           </p>
         </div>
-        <button class="btn-primary" @click="showModal = true">
-          ＋ Tambah Staff
+        <button class="btn-primary w-full sm:w-auto flex justify-center shrink-0" @click="showModal = true">
+          <span class="text-lg leading-none mr-1">＋</span> Tambah Staff
         </button>
       </div>
 
-      <div class="card overflow-hidden">
-        <div v-if="loading" class="py-16 text-center text-gray-400 text-sm">
-          Memuat anggota...
+      <div class="glass-card overflow-hidden fade-in">
+        <div v-if="loading" class="py-16 text-center text-gray-600 font-medium">
+          <span class="animate-pulse">⏳ Memuat anggota...</span>
         </div>
+        
         <div
           v-else-if="members.length === 0"
-          class="py-16 text-center text-gray-400 text-sm"
+          class="py-16 text-center"
         >
-          Belum ada staff pada divisi ini.
+          <div class="text-5xl mb-4 drop-shadow-md">👥</div>
+          <div class="text-gray-600 font-medium text-lg">
+            Belum ada staff pada divisi ini.
+          </div>
         </div>
+        
         <div v-else class="overflow-x-auto">
           <table class="w-full min-w-[620px]">
-            <thead class="bg-navy">
+            <thead class="bg-navy/90 backdrop-blur-md">
               <tr>
-                <th class="th">Nama</th>
+                <th class="th rounded-tl-xl">Nama</th>
                 <th class="th">Username</th>
                 <th class="th">Bergabung</th>
-                <th class="th">Aksi</th>
+                <th class="th rounded-tr-xl">Aksi</th>
               </tr>
             </thead>
             <tbody>
               <tr
                 v-for="member in members"
                 :key="member.id"
-                class="hover:bg-gray-50 transition-colors"
+                class="hover:bg-white/50 transition-colors border-b border-white/40 last:border-0"
               >
-                <td class="td font-medium text-gray-800">{{ member.nama }}</td>
-                <td class="td text-gray-500">{{ member.username }}</td>
-                <td class="td text-gray-500">
+                <td class="td font-bold text-gray-800">{{ member.nama }}</td>
+                <td class="td font-medium text-gray-700">{{ member.username }}</td>
+                <td class="td text-gray-700 font-medium">
                   {{ formatDate(member.created_at) }}
                 </td>
                 <td class="td">
@@ -64,140 +70,134 @@
       </div>
     </main>
 
+    <!-- ── Tambah Staff Modal ── -->
     <transition name="fade">
       <div
         v-if="showModal"
-        class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/55 backdrop-blur-sm"
+        class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-md"
         @click.self="showModal = false"
       >
-        <div class="w-full max-w-md card overflow-hidden">
-          <div
-            class="flex items-center justify-between px-6 py-4 border-b border-gray-100"
-          >
-            <h2 class="font-display font-semibold text-navy">Tambah Staff</h2>
-            <button
-              class="w-8 h-8 rounded-full border border-gray-200 text-gray-400"
-              @click="showModal = false"
-            >
-              ✕
-            </button>
+        <transition name="slide-up">
+          <div v-if="showModal" class="w-full max-w-md glass-modal overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-white/40">
+              <h2 class="font-display font-bold text-navy text-xl">Tambah Staff</h2>
+              <button
+                class="w-8 h-8 rounded-full border border-white/60 bg-white/50 flex items-center justify-center text-navy font-bold hover:bg-white/80 transition"
+                @click="showModal = false"
+              >✕</button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+              <div>
+                <label class="form-label font-bold text-gray-700">Nama Lengkap</label>
+                <input v-model="form.nama" class="form-control glass-input" placeholder="Contoh: Budi Santoso" />
+              </div>
+              <div>
+                <label class="form-label font-bold text-gray-700">Username</label>
+                <input v-model="form.username" class="form-control glass-input" placeholder="Contoh: budi.s" />
+              </div>
+              <div>
+                <label class="form-label font-bold text-gray-700">Password</label>
+                <input
+                  v-model="form.password"
+                  type="password"
+                  class="form-control glass-input"
+                  placeholder="Minimal 6 karakter"
+                />
+              </div>
+              <transition name="fade">
+                <div v-if="error" class="text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+                  {{ error }}
+                </div>
+              </transition>
+            </div>
+            <div class="px-6 py-4 border-t border-white/40 flex justify-end gap-2.5">
+              <button class="btn-secondary" @click="showModal = false">Batal</button>
+              <button class="btn-primary" :disabled="saving" @click="createStaff">
+                {{ saving ? "Menyimpan..." : "Tambahkan" }}
+              </button>
+            </div>
           </div>
-          <div class="px-6 py-5 space-y-4">
-            <div>
-              <label class="form-label">Nama Lengkap</label
-              ><input v-model="form.nama" class="form-control" />
-            </div>
-            <div>
-              <label class="form-label">Username</label
-              ><input v-model="form.username" class="form-control" />
-            </div>
-            <div>
-              <label class="form-label">Password</label
-              ><input
-                v-model="form.password"
-                type="password"
-                class="form-control"
-              />
-            </div>
-            <div
-              v-if="error"
-              class="text-sm text-danger bg-danger-light border border-red-200 rounded-lg px-4 py-2.5"
-            >
-              {{ error }}
-            </div>
-          </div>
-          <div
-            class="px-6 py-4 border-t border-gray-100 flex justify-end gap-2.5"
-          >
-            <button class="btn-secondary" @click="showModal = false">
-              Batal</button
-            ><button
-              class="btn-primary"
-              :disabled="saving"
-              @click="createStaff"
-            >
-              {{ saving ? "Menyimpan..." : "Tambahkan" }}
-            </button>
-          </div>
-        </div>
+        </transition>
       </div>
     </transition>
 
+    <!-- ── Atur Password Modal ── -->
     <transition name="fade">
       <div
         v-if="passwordModal"
-        class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/55 backdrop-blur-sm"
+        class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-md"
         @click.self="passwordModal = false"
       >
-        <div class="w-full max-w-md card overflow-hidden">
-          <div class="px-6 py-5">
-            <h2 class="font-display font-semibold text-navy">Atur Password</h2>
-            <p class="text-sm text-gray-500 mt-2">{{ passwordTarget?.nama }}</p>
-            <input
-              v-model="newPassword"
-              type="password"
-              class="form-control mt-4"
-              placeholder="Minimal 6 karakter"
-            />
-            <div v-if="passwordError" class="text-sm text-danger mt-3">
-              {{ passwordError }}
+        <transition name="slide-up">
+          <div v-if="passwordModal" class="w-full max-w-md glass-modal overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-white/40">
+              <div>
+                <p class="text-[11px] uppercase tracking-widest text-blue-600 font-bold">Pemulihan Akun</p>
+                <h2 class="font-display font-bold text-navy text-xl">Atur Password</h2>
+              </div>
+              <button
+                class="w-8 h-8 rounded-full border border-white/60 bg-white/50 flex items-center justify-center text-navy font-bold hover:bg-white/80 transition"
+                @click="passwordModal = false"
+              >✕</button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+              <p class="text-sm text-gray-600 font-medium">
+                Atur password baru untuk <strong class="text-gray-900">{{ passwordTarget?.nama }}</strong>.
+              </p>
+              <input
+                v-model="newPassword"
+                type="password"
+                class="form-control glass-input"
+                placeholder="Minimal 6 karakter"
+                @keyup.enter="savePassword"
+              />
+              <transition name="fade">
+                <div v-if="passwordError" class="text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+                  {{ passwordError }}
+                </div>
+              </transition>
+            </div>
+            <div class="px-6 py-4 border-t border-white/40 flex justify-end gap-2.5">
+              <button class="btn-secondary" @click="passwordModal = false">Batal</button>
+              <button class="btn-primary" @click="savePassword">Simpan Password</button>
             </div>
           </div>
-          <div
-            class="px-6 py-4 border-t border-gray-100 flex justify-end gap-2.5"
-          >
-            <button class="btn-secondary" @click="passwordModal = false">
-              Batal</button
-            ><button class="btn-primary" @click="savePassword">Simpan</button>
-          </div>
-        </div>
+        </transition>
       </div>
     </transition>
 
+    <!-- ── Hapus Akun Confirm ── -->
     <transition name="fade">
       <div
         v-if="deleteModal"
-        class="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm"
+        class="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-md"
         @click.self="deleteModal = false"
       >
-        <div class="w-full max-w-sm card overflow-hidden">
-          <div
-            class="flex items-center justify-between px-6 py-4 border-b border-gray-100"
-          >
-            <h2 class="font-display font-semibold text-navy">
-              Hapus Akun Staff
-            </h2>
-            <button
-              class="w-8 h-8 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition"
-              @click="deleteModal = false"
-            >
-              ✕
-            </button>
+        <transition name="slide-up">
+          <div v-if="deleteModal" class="w-full max-w-sm glass-modal overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-white/40">
+              <h2 class="font-display font-bold text-navy text-xl">Hapus Akun Staff</h2>
+              <button
+                class="w-8 h-8 rounded-full border border-white/60 bg-white/50 flex items-center justify-center text-navy font-bold hover:bg-white/80 transition"
+                @click="deleteModal = false"
+              >✕</button>
+            </div>
+            <div class="px-6 py-5 text-sm text-gray-700 font-medium leading-relaxed">
+              Akun <strong class="text-gray-900 font-bold">{{ deleteTarget?.nama }}</strong> beserta jadwal yang dibuatnya akan dihapus permanen.
+              <transition name="fade">
+                <p v-if="deleteError" class="text-red-500 font-bold mt-3 bg-red-50 p-2 rounded-lg border border-red-200">
+                  {{ deleteError }}
+                </p>
+              </transition>
+            </div>
+            <div class="px-6 py-4 border-t border-white/40 flex justify-end gap-2.5">
+              <button class="btn-secondary" :disabled="deleting" @click="deleteModal = false">Batal</button>
+              <button class="btn-danger" :disabled="deleting" @click="deleteMember">
+                {{ deleting ? "Menghapus..." : "Ya, Hapus" }}
+              </button>
+            </div>
           </div>
-          <div class="px-6 py-5 text-sm text-gray-600 leading-relaxed">
-            Akun <strong class="text-gray-800">{{ deleteTarget?.nama }}</strong>
-            beserta jadwal yang dibuatnya akan dihapus permanen.
-            <p v-if="deleteError" class="text-danger mt-3">{{ deleteError }}</p>
-          </div>
-          <div
-            class="px-6 py-4 border-t border-gray-100 flex justify-end gap-2.5"
-          >
-            <button
-              class="btn-secondary"
-              :disabled="deleting"
-              @click="deleteModal = false"
-            >
-              Batal
-            </button>
-            <button
-              class="btn-danger"
-              :disabled="deleting"
-              @click="deleteMember"
-            >
-              {{ deleting ? "Menghapus..." : "Ya, Hapus" }}
-            </button>
-          </div>
-        </div>
+        </transition>
       </div>
     </transition>
   </div>
@@ -297,3 +297,55 @@ const formatDate = (value) =>
   value ? new Date(value).toLocaleDateString("id-ID") : "-";
 onMounted(fetchMembers);
 </script>
+
+<style scoped>
+/* ── Transisi ── */
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+.slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease; }
+.slide-up-enter-from, .slide-up-leave-to { opacity: 0; transform: translateY(20px); }
+
+/* ── Glassmorphism ── */
+.glass-card {
+  @apply bg-white/75 backdrop-blur-xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl;
+}
+.glass-modal {
+  @apply bg-white/95 backdrop-blur-2xl border border-white/60 shadow-2xl rounded-2xl;
+}
+.glass-input {
+  @apply bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5;
+}
+
+/* ── Table Styling ── */
+.th {
+  @apply px-5 py-4 text-left text-xs font-bold text-white uppercase tracking-widest border-b border-white/20;
+}
+.td {
+  @apply px-5 py-4 text-sm align-middle;
+}
+
+/* ── Buttons ── */
+.btn-sm-edit {
+  @apply text-xs font-bold px-4 py-2 rounded-lg bg-blue-50/80 text-blue-700 border border-blue-200 hover:bg-blue-600 hover:text-white transition-all shadow-sm;
+}
+.btn-sm-del {
+  @apply text-xs font-bold px-4 py-2 rounded-lg bg-red-50/80 text-red-600 border border-red-200 hover:bg-red-600 hover:text-white transition-all shadow-sm;
+}
+.btn-primary {
+  @apply font-bold px-6 py-2.5 rounded-xl bg-navy/90 text-white shadow-lg shadow-navy/30 hover:bg-navy hover:scale-105 transition-all backdrop-blur-sm border border-navy/50;
+}
+.btn-secondary {
+  @apply font-bold px-6 py-2.5 rounded-xl bg-white/60 text-gray-700 shadow-sm hover:bg-white/80 transition-all border border-white/60 backdrop-blur-sm;
+}
+.btn-danger {
+  @apply font-bold px-6 py-2.5 rounded-xl bg-red-500/90 text-white shadow-lg shadow-red-500/30 hover:bg-red-600 hover:scale-105 transition-all backdrop-blur-sm border border-red-500/50;
+}
+</style>

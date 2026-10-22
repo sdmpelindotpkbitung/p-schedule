@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path"); // 1. Tambahkan path untuk mengelola direktori
 
 const app = express();
 
@@ -14,10 +15,14 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// 2. Akses folder statis untuk file upload (gambar slideshow)
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+
 // ── Routes ───────────────────────────────────────────────────
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/ruangan", require("./routes/ruangan"));
 app.use("/api/jadwal", require("./routes/jadwal"));
+app.use("/api/tv", require("./routes/tv")); // 3. Daftarkan route untuk TV Slideshow
 
 // ── Health check ─────────────────────────────────────────────
 app.get("/api/health", (req, res) => {
@@ -36,6 +41,7 @@ app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
   res.status(500).json({ message: "Terjadi kesalahan internal pada server." });
 });
+
 
 // ── Start server (Disesuaikan untuk Vercel & Lokal) ───────────
 // Vercel secara otomatis menyematkan environment variable VERCEL=1

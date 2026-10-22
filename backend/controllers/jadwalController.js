@@ -1,8 +1,12 @@
 const db = require("../config/db");
+// ⚠️ Pastikan baris di bawah ini mengarah ke file konfigurasi Supabase Anda
+// (Sesuaikan path-nya jika file Anda berbeda, misalnya "../config/supabaseConfig")
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// PERUBAHAN: DATE_FORMAT dan TIME_FORMAT diganti dengan TO_CHAR bawaan PostgreSQL
+// PERUBAHAN 1: Menambahkan s.foto di selectFields agar frontend bisa membaca gambar
 const selectFields = `
-  s.id, TO_CHAR(s.tanggal, 'YYYY-MM-DD') AS tanggal,
+  s.id, s.foto, s.is_reminder, TO_CHAR(s.tanggal, 'YYYY-MM-DD') AS tanggal,
   TO_CHAR(s.jam_mulai, 'HH24:MI') AS jam_mulai,
   TO_CHAR(s.jam_selesai, 'HH24:MI') AS jam_selesai,
   s.agenda, s.keterangan, s.created_at, s.user_id,
@@ -19,7 +23,6 @@ const findConflict = async (
   jamSelesai,
   excludeId = null
 ) => {
-  // PERUBAHAN: Parameter menggunakan $1, $2, dst.
   let query = `SELECT s.*, u.nama AS nama_penginput, r.nama AS nama_ruangan
     FROM schedules s JOIN users u ON s.user_id = u.id JOIN rooms r ON s.room_id = r.id
     WHERE s.room_id = $1 AND s.tanggal = $2 AND s.jam_mulai < $3 AND s.jam_selesai > $4`;
@@ -31,7 +34,6 @@ const findConflict = async (
     params.push(excludeId);
   }
   
-  // PERUBAHAN: const [rows] menjadi const { rows }
   const { rows } = await db.query(query, params);
   return rows[0] || null;
 };
@@ -41,7 +43,6 @@ const getAll = async (req, res) => {
     let where = "";
     const params = [];
     if (req.query.bulan) {
-      // PERUBAHAN: Format date diubah menggunakan TO_CHAR
       where = "WHERE TO_CHAR(s.tanggal, 'YYYY-MM') = $1";
       params.push(req.query.bulan);
     } else if (req.query.tanggal) {
@@ -49,7 +50,6 @@ const getAll = async (req, res) => {
       params.push(req.query.tanggal);
     }
     
-    // PERUBAHAN: const [rows] menjadi const { rows }
     const { rows } = await db.query(
       `SELECT ${selectFields} ${joins} ${where} ORDER BY s.tanggal ASC, s.jam_mulai ASC`,
       params
@@ -77,7 +77,6 @@ const getManaged = async (req, res) => {
       params.push(requester[0]?.division_id || 0);
     }
     
-    // PERUBAHAN: const [rows] menjadi const { rows }
     const { rows } = await db.query(
       `SELECT ${selectFields} ${joins} ${where} ORDER BY s.tanggal DESC, s.jam_mulai DESC`,
       params
@@ -91,7 +90,6 @@ const getManaged = async (req, res) => {
 
 const getById = async (req, res) => {
   try {
-    // PERUBAHAN: const [rows] menjadi const { rows }, param ? menjadi $1
     const { rows } = await db.query(
       `SELECT ${selectFields} ${joins} WHERE s.id = $1`,
       [req.params.id]
@@ -119,27 +117,45 @@ const validatePayload = ({
   return null;
 };
 
+// PERUBAHAN 2: Fungsi CREATE disesuaikan untuk menangkap gambar (req.file)
 const create = async (req, res) => {
   const error = validatePayload(req.body);
   if (error) return res.status(400).json({ message: error });
-  const { room_id, tanggal, jam_mulai, jam_selesai, agenda, keterangan } =
-    req.body;
+  
+  // 👈 PASTIKAN is_reminder DITANGKAP DARI req.body
+  const { room_id, tanggal, jam_mulai, jam_selesai, agenda, keterangan, is_reminder } = req.body;
+  
   try {
-    const conflict = await findConflict(
-      room_id,
-      tanggal,
-      jam_mulai,
-      jam_selesai
-    );
+    const conflict = await findConflict(room_id, tanggal, jam_mulai, jam_selesai);
     if (conflict)
-      return res.status(409).json({
-        message: "Jadwal bentrok dengan jadwal yang sudah ada.",
-        conflict,
-      });
+      return res.status(409).json({ message: "Jadwal bentrok dengan jadwal yang sudah ada.", conflict });
       
-    // PERUBAHAN: ? menjadi $1, $2, dst. dan menambahkan RETURNING id (PostgreSQL style untuk insertId)
+    // ── Logika Upload Gambar ──
+    let fotoUrl = null;
+    if (req.file) {
+      const fileExt = req.file.originalname.split('.').pop();
+      const fileName = `jadwal-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('jadwal_foto') 
+        .upload(fileName, req.file.buffer, { contentType: req.file.mimetype });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('jadwal_foto')
+        .getPublicUrl(fileName);
+
+      fotoUrl = publicUrlData.publicUrl;
+    }
+    // ────────────────────────
+
+    // 👈 DEKLARASIKAN reminderFlag TEPAT SEBELUM QUERY INSERT
+    const reminderFlag = is_reminder === 'true' || is_reminder === true;
+
     const { rows: result } = await db.query(
-      `INSERT INTO schedules (user_id, room_id, tanggal, jam_mulai, jam_selesai, agenda, keterangan) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+      `INSERT INTO schedules (user_id, room_id, tanggal, jam_mulai, jam_selesai, agenda, keterangan, foto, is_reminder) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
       [
         req.user.id,
         room_id,
@@ -148,11 +164,11 @@ const create = async (req, res) => {
         jam_selesai,
         agenda,
         keterangan || null,
+        fotoUrl,
+        reminderFlag // Parameter ke-9
       ]
     );
-    res
-      .status(201)
-      .json({ message: "Jadwal berhasil ditambahkan.", id: result[0].id });
+    res.status(201).json({ message: "Jadwal berhasil ditambahkan.", id: result[0].id });
   } catch (err) {
     console.error("create schedule error:", err);
     res.status(500).json({ message: "Terjadi kesalahan pada server." });
@@ -163,7 +179,6 @@ const canManage = async (user, scheduleUserId) => {
   if (user.role === "big_admin") return true;
   if (user.role === "staff") return scheduleUserId === user.id;
   if (user.role === "pic") {
-    // PERUBAHAN: ? menjadi $1, const [requester] menjadi const { rows: requester }
     const { rows: requester } = await db.query(
       "SELECT division_id FROM users WHERE id = $1",
       [user.id]
@@ -182,40 +197,58 @@ const canManage = async (user, scheduleUserId) => {
   return false;
 };
 
+// PERUBAHAN 3: Fungsi UPDATE disesuaikan untuk menangkap gambar (req.file) dan menghapus gambar
 const update = async (req, res) => {
   const error = validatePayload(req.body);
   if (error) return res.status(400).json({ message: error });
-  const { room_id, tanggal, jam_mulai, jam_selesai, agenda, keterangan } =
-    req.body;
+  
+  // 👈 PASTIKAN is_reminder DITANGKAP DARI req.body
+  const { room_id, tanggal, jam_mulai, jam_selesai, agenda, keterangan, remove_foto, is_reminder } = req.body;
+  
   try {
-    // PERUBAHAN: ? menjadi $1
-    const { rows: existing } = await db.query("SELECT * FROM schedules WHERE id = $1", [
-      req.params.id,
-    ]);
+    const { rows: existing } = await db.query("SELECT * FROM schedules WHERE id = $1", [req.params.id]);
     if (!existing.length)
       return res.status(404).json({ message: "Jadwal tidak ditemukan." });
       
     if (!(await canManage(req.user, existing[0].user_id)))
-      return res.status(403).json({
-        message: "Anda tidak memiliki izin untuk mengubah jadwal ini.",
-      });
+      return res.status(403).json({ message: "Anda tidak memiliki izin untuk mengubah jadwal ini." });
       
     const conflict = await findConflict(
-      room_id,
-      tanggal,
-      jam_mulai,
-      jam_selesai,
-      parseInt(req.params.id)
+      room_id, tanggal, jam_mulai, jam_selesai, parseInt(req.params.id)
     );
     if (conflict)
-      return res.status(409).json({
-        message: "Jadwal bentrok dengan jadwal yang sudah ada.",
-        conflict,
-      });
+      return res.status(409).json({ message: "Jadwal bentrok dengan jadwal yang sudah ada.", conflict });
       
-    // PERUBAHAN: ? menjadi $1, $2, dst.
+    // ── Logika Update Gambar ──
+    let fotoUrl = existing[0].foto; 
+
+    if (req.file) { 
+      const fileExt = req.file.originalname.split('.').pop();
+      const fileName = `jadwal-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('jadwal_foto')
+        .upload(fileName, req.file.buffer, { contentType: req.file.mimetype });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('jadwal_foto')
+        .getPublicUrl(fileName);
+
+      fotoUrl = publicUrlData.publicUrl; 
+    } else if (remove_foto === 'true') {
+      fotoUrl = null; 
+    }
+    // ────────────────────────
+      
+    // 👈 DEKLARASIKAN reminderFlag TEPAT SEBELUM QUERY UPDATE
+    const reminderFlag = is_reminder === 'true' || is_reminder === true;
+
     await db.query(
-      `UPDATE schedules SET room_id = $1, tanggal = $2, jam_mulai = $3, jam_selesai = $4, agenda = $5, keterangan = $6 WHERE id = $7`,
+      `UPDATE schedules 
+       SET room_id = $1, tanggal = $2, jam_mulai = $3, jam_selesai = $4, agenda = $5, keterangan = $6, foto = $7, is_reminder = $8 
+       WHERE id = $9`,
       [
         room_id,
         tanggal,
@@ -223,7 +256,9 @@ const update = async (req, res) => {
         jam_selesai,
         agenda,
         keterangan || null,
-        req.params.id,
+        fotoUrl,
+        reminderFlag, // Parameter ke-8
+        req.params.id // Parameter ke-9
       ]
     );
     res.json({ message: "Jadwal berhasil diperbarui." });
@@ -235,7 +270,6 @@ const update = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    // PERUBAHAN: ? menjadi $1
     const { rows: existing } = await db.query("SELECT * FROM schedules WHERE id = $1", [
       req.params.id,
     ]);
@@ -247,7 +281,6 @@ const remove = async (req, res) => {
         message: "Anda tidak memiliki izin untuk menghapus jadwal ini.",
       });
       
-    // PERUBAHAN: ? menjadi $1
     await db.query("DELETE FROM schedules WHERE id = $1", [req.params.id]);
     res.json({ message: "Jadwal berhasil dihapus." });
   } catch (err) {

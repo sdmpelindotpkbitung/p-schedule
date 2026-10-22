@@ -1,136 +1,117 @@
 <template>
-  <header
-    class="bg-navy text-white h-14 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-50 shadow-lg w-full"
-  >
-    <!-- Brand -->
-    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-      <img
-        src="/images/logo.png"
-        alt="Logo P-Schedule"
-        class="w-8 h-8 rounded-lg object-contain shrink-0"
-      />
+  <header class="shrink-0 glass-header px-4 sm:px-6 py-3 flex items-center justify-between z-50 shadow-sm border-b border-white/40 sticky top-0 w-full">
+    
+    <!-- ═══ KIRI: Brand & Logo ═══ -->
+    <div class="flex items-center gap-3 shrink-0">
+      <div class="bg-white/80 p-1.5 rounded-xl shadow-sm border border-white/50">
+        <img src="/images/logo.png" alt="Logo" class="w-8 h-8 object-contain" />
+      </div>
       <div>
-        <div class="font-display font-semibold text-sm leading-tight">
-          P-Schedule
-        </div>
-        <div class="text-[10px] text-white/40 hidden sm:block">
-          PT Pelindo Terminal Petikemas TPK Bitung
-        </div>
+        <h1 class="font-display font-bold text-navy text-lg leading-tight drop-shadow-sm">P-Schedule</h1>
+        <p class="text-[10px] font-bold text-navy/70 tracking-widest uppercase hidden sm:block">PT Pelindo Terminal Petikemas TPK Bitung</p>
       </div>
     </div>
 
-    <!-- Nav + User (Menu Kanan) -->
-    <!-- PERBAIKAN: ml-auto, min-w-0, dan pl-4 agar menu bisa digeser dengan sempurna tanpa terpotong -->
-    <div class="flex items-center gap-2 sm:gap-3 overflow-x-auto min-w-0 ml-auto pl-4">
+    <!-- ═══ TENGAH: Menu Navigasi (Sesuai Role) ═══ -->
+    <nav class="hidden md:flex items-center bg-white/40 backdrop-blur-sm border border-white/50 rounded-xl p-1 shadow-sm shrink-0">
+      <router-link 
+        to="/kalender" 
+        class="px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300"
+        active-class="bg-navy/90 text-white shadow-md"
+        :class="[$route.name === 'Kalender' ? '' : 'text-gray-700 hover:bg-white/60 hover:text-navy']"
+      >
+        Kalender
+      </router-link>
       
-      <!-- Nav tabs -->
-      <nav
-        class="flex bg-white/8 border border-white/10 rounded-lg p-0.5 gap-0.5 shrink-0"
+      <!-- Menu Admin (Hanya untuk big_admin) -->
+      <router-link 
+        v-if="auth.isBigAdmin"
+        to="/admin" 
+        class="px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300"
+        active-class="bg-navy/90 text-white shadow-md"
+        :class="[$route.name === 'Admin' ? '' : 'text-gray-700 hover:bg-white/60 hover:text-navy']"
       >
-        <router-link
-          to="/"
-          class="px-3 sm:px-4 py-1.5 rounded-md text-xs font-medium transition-all shrink-0"
-          :class="
-            $route.name === 'Kalender'
-              ? 'bg-white/15 text-white'
-              : 'text-white/50 hover:text-white'
-          "
-        >
-          Kalender
-        </router-link>
-        <router-link
-          v-if="auth.isBigAdmin"
-          to="/admin"
-          class="px-3 sm:px-4 py-1.5 rounded-md text-xs font-medium transition-all shrink-0"
-          :class="
-            $route.name === 'Admin'
-              ? 'bg-white/15 text-white'
-              : 'text-white/50 hover:text-white'
-          "
-        >
-          Admin
-        </router-link>
-        <router-link
-          to="/kelola-jadwal"
-          v-if="!auth.isBigAdmin"
-          class="px-3 sm:px-4 py-1.5 rounded-md text-xs font-medium transition-all shrink-0"
-          :class="
-            $route.name === 'KelolaJadwal'
-              ? 'bg-white/15 text-white'
-              : 'text-white/50 hover:text-white'
-          "
-          >Kelola Jadwal</router-link
-        >
-        <router-link
-          v-if="auth.isPic"
-          to="/anggota-divisi"
-          class="px-3 sm:px-4 py-1.5 rounded-md text-xs font-medium transition-all shrink-0"
-          :class="
-            $route.name === 'AnggotaDivisi'
-              ? 'bg-white/15 text-white'
-              : 'text-white/50 hover:text-white'
-          "
-          >Anggota Divisi</router-link
-        >
-      </nav>
+        Admin Panel
+      </router-link>
 
-      <!-- User chip -->
-      <div
-        class="flex items-center gap-2 bg-white/8 border border-white/12 rounded-full pl-1.5 pr-1.5 sm:pr-3 py-1 shrink-0"
+      <!-- Menu Kelola Jadwal (Untuk selain big_admin) -->
+      <router-link 
+        v-if="!auth.isBigAdmin"
+        to="/kelola-jadwal" 
+        class="px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300"
+        active-class="bg-navy/90 text-white shadow-md"
+        :class="[$route.name === 'KelolaJadwal' ? '' : 'text-gray-700 hover:bg-white/60 hover:text-navy']"
       >
-        <div
-          class="w-6 h-6 bg-accent rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0"
-        >
+        Kelola Jadwal
+      </router-link>
+
+      <!-- Menu Anggota Divisi (Hanya untuk PIC) -->
+      <router-link 
+        v-if="auth.isPic"
+        to="/anggota-divisi" 
+        class="px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300"
+        active-class="bg-navy/90 text-white shadow-md"
+        :class="[$route.name === 'AnggotaDivisi' ? '' : 'text-gray-700 hover:bg-white/60 hover:text-navy']"
+      >
+        Anggota Divisi
+      </router-link>
+    </nav>
+
+    <!-- ═══ KANAN: Profil & Logout ═══ -->
+    <div class="flex items-center gap-3 sm:gap-4 shrink-0">
+      <div class="flex items-center gap-2.5 bg-white/40 px-3 py-1.5 rounded-xl border border-white/50 shadow-sm">
+        <div class="w-7 h-7 rounded-full bg-navy text-white flex items-center justify-center font-bold text-xs shadow-md">
           {{ auth.userInitial }}
         </div>
-        <span class="text-xs hidden sm:block shrink-0">{{ auth.userName }}</span>
-        <span v-if="auth.divisionName" class="text-[10px] text-white/50 hidden lg:block shrink-0">{{
-          auth.divisionName
-        }}</span>
-        <span
-          class="text-[10px] bg-white/15 px-1.5 py-0.5 rounded-full uppercase tracking-wider font-medium hidden sm:block shrink-0"
-        >
-          {{ auth.userRole }}
-        </span>
+        <div class="hidden sm:block">
+          <div class="flex items-center gap-1.5">
+            <p class="text-xs font-bold text-navy leading-none">{{ auth.userName }}</p>
+            <span v-if="auth.divisionName" class="text-[9px] font-bold bg-white/60 text-navy px-1.5 py-0.5 rounded-md border border-white/80 uppercase">
+              {{ auth.divisionName }}
+            </span>
+            <span class="text-[9px] font-bold bg-navy text-white px-1.5 py-0.5 rounded-md uppercase">
+              {{ auth.userRole === 'big_admin' ? 'Admin' : (auth.userRole === 'pic' ? 'PIC' : 'Staff') }}
+            </span>
+          </div>
+        </div>
       </div>
-
-      <!-- Logout -->
-      <!-- PERBAIKAN: shrink-0 agar teks 'Keluar' tidak tergencet -->
-      <button
-        class="text-xs text-white/60 border border-white/15 px-3 py-1.5 rounded-lg hover:bg-white/8 hover:text-white transition shrink-0"
-        @click="showLogoutConfirm = true"
+      
+      <button 
+        @click="showLogoutConfirm = true" 
+        class="w-9 h-9 flex items-center justify-center rounded-xl bg-red-500/90 text-white hover:bg-red-600 transition shadow-sm border border-red-500/50" 
+        title="Keluar"
       >
-        Keluar
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
       </button>
     </div>
 
-    <!-- Modal Konfirmasi Logout -->
+    <!-- ═══ MODAL KONFIRMASI LOGOUT ═══ -->
     <transition name="fade">
       <div
         v-if="showLogoutConfirm"
         class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm"
         @click.self="showLogoutConfirm = false"
       >
-        <div class="w-full max-w-sm card overflow-hidden text-gray-800">
+        <div class="w-full max-w-sm glass-modal overflow-hidden text-gray-800">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            <h2 class="font-display font-bold text-navy">Konfirmasi Keluar</h2>
+            <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition" @click="showLogoutConfirm = false">✕</button>
+          </div>
           <div class="px-6 py-5">
-            <h2 class="font-display font-semibold text-navy">
-              Konfirmasi Keluar
-            </h2>
-            <p class="mt-2 text-sm text-gray-500">
+            <p class="text-sm font-medium text-gray-600 leading-relaxed">
               Apakah Anda yakin ingin keluar dari aplikasi?
             </p>
           </div>
-          <div
-            class="px-6 py-4 border-t border-gray-100 flex justify-end gap-2.5"
-          >
-            <button class="btn-secondary" @click="showLogoutConfirm = false">
-              Tidak
-            </button>
+          <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
+            <button class="btn-secondary" @click="showLogoutConfirm = false">Batal</button>
             <button class="btn-danger" @click="doLogout">Ya, Keluar</button>
           </div>
         </div>
       </div>
     </transition>
+
   </header>
 </template>
 
@@ -148,3 +129,28 @@ const doLogout = () => {
   router.push({ name: "Login" });
 };
 </script>
+
+<style scoped>
+/* ── Efek Kaca untuk Header ── */
+.glass-header {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ── Transisi Modal ── */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+.glass-modal {
+  @apply bg-white/95 backdrop-blur-2xl border border-white/60 shadow-2xl rounded-2xl;
+}
+
+/* ── Buttons Modal ── */
+.btn-secondary {
+  @apply font-bold px-6 py-2 rounded-xl bg-white/80 text-gray-700 shadow-sm hover:bg-white transition-all border border-gray-200 backdrop-blur-sm;
+}
+.btn-danger {
+  @apply font-bold px-6 py-2 rounded-xl bg-red-500/90 text-white shadow-lg shadow-red-500/30 hover:bg-red-600 hover:scale-105 transition-all backdrop-blur-sm border border-red-500/50;
+}
+</style>

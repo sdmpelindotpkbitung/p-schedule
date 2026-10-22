@@ -3,9 +3,29 @@
 @tailwind utilities;
 
 @layer base {
+  /* Pastikan ini ada di file CSS Global */
   body {
-    @apply bg-gray-50 text-gray-800 antialiased;
-    font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
+    /* Sesuaikan path ini dengan lokasi gambar Anda */
+    background-image: url('images/halaman.jpeg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  /* Membungkus seluruh aplikasi (ID standar Vue biasanya #app) */
+  #app {
+    /* Memberikan overlay sedikit gelap agar teks tetap jelas terbaca */
+    background-color: rgba(0, 0, 0, 0.35); 
+    
+    /* Efek Blur (Aesthetic Glassmorphism) */
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); /* Untuk dukungan browser Safari */
+    
+    min-height: 100vh;
+    width: 100%;
   }
 }
 
