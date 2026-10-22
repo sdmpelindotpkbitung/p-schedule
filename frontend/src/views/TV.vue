@@ -10,7 +10,7 @@
       
       <div class="header-brand-container">
         <div class="text-right">
-          <h1 class="brand-title transition-colors duration-700">PT Pelindo Petikemas</h1>
+          <h1 class="brand-title transition-colors duration-700">PT Pelindo Terminal Petikemas</h1>
           <p class="brand-subtitle transition-colors duration-700">TPK Bitung</p>
         </div>
         <div class="brand-logo-wrapper transition-all duration-700">
@@ -114,7 +114,7 @@
               <img v-if="slides.length > 0" :src="getImageUrl(slides[currentSlideIndex]?.url)" :key="slides[currentSlideIndex]?.id + '-' + tick" class="idle-slide-image" />
               <div v-if="slides.length === 0" key="no-image" class="empty-slide-state"><span class="text-6xl mb-4">🖼️</span><p class="text-white/70 font-medium">Belum ada foto slide</p></div>
             </transition-group>
-            <div class="idle-welcome-text"><h2>PT Pelindo Petikemas</h2><p>TPK Bitung</p></div>
+            <div class="idle-welcome-text"><h2>PT Pelindo Terminal Petikemas</h2><p>TPK Bitung</p></div>
           </div>
 
           <!-- KOLOM 2: SELESAI HARI INI -->
