@@ -47,7 +47,7 @@ const akanDatang = async (req, res) => {
       QUERY +
         `
         WHERE s.tanggal > CURRENT_DATE
-          AND s.tanggal <= CURRENT_DATE + INTERVAL '3 days'
+          AND (s.tanggal <= CURRENT_DATE + INTERVAL '3 days' OR s.is_reminder = true)
         ORDER BY s.tanggal ASC, s.jam_mulai ASC
       `
     );

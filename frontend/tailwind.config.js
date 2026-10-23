@@ -16,14 +16,8 @@ export default {
         "danger-light": "#fee2e2",
       },
       fontFamily: {
-        display: [
-          "Segoe UI",
-          "Inter",
-          "ui-sans-serif",
-          "system-ui",
-          "sans-serif",
-        ],
-        sans: ["Inter", "Segoe UI", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Poppins", "sans-serif"],
+        sans: ['"Plus Jakarta Sans"', "sans-serif"],
       },
     },
   },

@@ -4,14 +4,12 @@
       <!-- Glassmorphism Card -->
       <div class="glass-card p-10">
         <!-- Logo -->
-        <div class="flex justify-center mb-6">
-          <div class="bg-white/80 p-3 rounded-2xl shadow-sm border border-white/50">
-            <img
-              src="/images/logo.png"
-              alt="Logo P-Schedule"
-              class="w-12 h-12 object-contain shrink-0"
-            />
-          </div>
+        <div class="flex flex-col items-center justify-center mb-6">
+          <img
+            src="/images/logo-pelindo.png"
+            alt="Logo Pelindo"
+            class="w-48 h-auto object-contain shrink-0"
+          />
         </div>
 
         <div class="text-center mb-8">
@@ -19,7 +17,7 @@
             Selamat Datang
           </h1>
           <p class="text-xs font-medium text-gray-600">
-            Sistem Penjadwalan - PT Pelindo Petikemas TPK Bitung
+            Sistem Penjadwalan - PT Pelindo Terminal Petikemas TPK Bitung
           </p>
         </div>
 
@@ -90,7 +88,7 @@
 
       <!-- Footer -->
       <p class="text-center text-xs font-medium text-white/70 drop-shadow-md mt-8">
-        PT Pelindo Petikemas TPK Bitung &copy; {{ new Date().getFullYear() }}
+        PT Pelindo Terminal Petikemas TPK Bitung X UMGO & POLI &copy; {{ new Date().getFullYear() }}
       </p>
     </div>
   </div>

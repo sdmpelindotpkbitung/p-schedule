@@ -1,20 +1,25 @@
 <template>
   <div class="tv-wrapper" :class="{ 'idle-mode': isIdleMode }">
     
-    <!-- ═══ HEADER ═══ -->
-    <header class="tv-header-modern glass-effect relative z-40 transition-all duration-700">
+        <!-- ═══ HEADER ═══ -->
+    <header class="tv-header-modern glass-effect relative z-40 transition-all duration-700 flex justify-between items-center p-4">
       <div class="header-time-container">
         <div class="tv-time transition-colors duration-700">{{ jam }}</div>
         <div class="tv-date-modern transition-colors duration-700">{{ hariHariIni }}, {{ tanggalHariIni }}</div>
       </div>
       
-      <div class="header-brand-container">
-        <div class="text-right">
-          <h1 class="brand-title transition-colors duration-700">PT Pelindo Terminal Petikemas</h1>
-          <p class="brand-subtitle transition-colors duration-700">TPK Bitung</p>
+      <!-- ═══ KANAN: Brand & Logo ═══ -->
+      <div class="header-brand-container flex items-center gap-4">
+        <div class="text-right mt-1">
+          <h1 class="brand-title transition-colors duration-700 text-xl font-bold tracking-widest uppercase">TPK Bitung</h1>
         </div>
-        <div class="brand-logo-wrapper transition-all duration-700">
-          <img src="/images/logo.png" alt="Logo" class="brand-logo" />
+        
+        <!-- Garis pembatas vertikal -->
+        <span class="h-10 border-l-2 border-slate-400/60"></span>
+        
+        <div class="brand-logo-wrapper transition-all duration-700 flex items-center">
+          <!-- Ukuran w-48 (lebar 192px) agar logo memanjang sempurna -->
+          <img src="/images/logo-pelindo.png" alt="Logo Pelindo" class="w-48 h-auto object-contain" />
         </div>
       </div>
     </header>
@@ -302,7 +307,7 @@ const startSlideshow = () => {
       currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length;
       tick.value++; 
     }
-  }, 5000); 
+  }, 15000); 
 };
 
 onMounted(() => {

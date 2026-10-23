@@ -2,15 +2,16 @@
   <div class="min-h-screen flex flex-col font-sans">
     <Topbar />
 
-    <main class="flex-1 max-w-[1100px] w-full mx-auto px-6 py-7">
-      <!-- Tab bar Glassmorphism -->
+    <!-- Padding disesuaikan untuk HP (px-4 py-5) dan Desktop (sm:px-6 sm:py-7) -->
+    <main class="flex-1 max-w-[1100px] w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 overflow-hidden">
+      <!-- Tab bar Glassmorphism (Bisa di-scroll ke samping di HP) -->
       <div
-        class="flex gap-1 bg-white/60 backdrop-blur-md border border-white/50 rounded-xl p-1.5 w-full sm:w-fit mb-8 shadow-lg overflow-x-auto whitespace-nowrap"
+        class="flex gap-2 sm:gap-1 bg-white/60 backdrop-blur-md border border-white/50 rounded-xl p-1.5 w-full sm:w-fit mb-6 sm:mb-8 shadow-lg overflow-x-auto whitespace-nowrap"
       >
         <button
           v-for="tab in tabs"
           :key="tab.key"
-          class="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300"
+          class="px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm font-semibold transition-all duration-300"
           :class="
             activeTab === tab.key
               ? 'bg-navy/90 text-white shadow-md backdrop-blur-sm transform scale-105'
@@ -24,17 +25,17 @@
 
       <!-- ═══ Tab: Semua Jadwal ═══ -->
       <div v-if="activeTab === 'jadwal'" class="fade-in">
-        <div class="flex items-center justify-between mb-4 px-2">
-          <h2 class="font-display font-bold text-navy text-2xl drop-shadow-sm">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 px-1 sm:px-2 gap-3 sm:gap-0">
+          <h2 class="font-display font-bold text-navy text-xl sm:text-2xl drop-shadow-sm">
             Semua Jadwal
           </h2>
-          <span class="text-sm font-medium text-gray-600 bg-white/50 px-3 py-1 rounded-full backdrop-blur-sm border border-white/40"
-            >{{ jadwal.length }} jadwal ditemukan</span
-          >
+          <span class="text-xs sm:text-sm font-medium text-gray-600 bg-white/50 px-3 py-1 rounded-full backdrop-blur-sm border border-white/40">
+            {{ jadwal.length }} jadwal ditemukan
+          </span>
         </div>
         <div class="glass-card overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="w-full min-w-[700px]">
+            <table class="w-full min-w-[800px]">
               <thead class="bg-navy/90 backdrop-blur-md">
                 <tr>
                   <th class="th rounded-tl-xl">Agenda</th>
@@ -86,17 +87,17 @@
 
       <!-- ═══ Tab: Ruangan ═══ -->
       <div v-if="activeTab === 'ruangan'" class="fade-in">
-        <div class="flex items-center justify-between mb-4 px-2">
-          <h2 class="font-display font-bold text-navy text-2xl drop-shadow-sm">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 px-1 sm:px-2 gap-3 sm:gap-0">
+          <h2 class="font-display font-bold text-navy text-xl sm:text-2xl drop-shadow-sm">
             Daftar Ruangan
           </h2>
-          <button class="btn-primary" @click="openRoomModal()">
+          <button class="btn-primary text-sm sm:text-base w-full sm:w-auto" @click="openRoomModal()">
             ＋ Tambah Ruangan
           </button>
         </div>
         <div class="glass-card overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="w-full min-w-[500px]">
+            <table class="w-full min-w-[600px]">
               <thead class="bg-navy/90 backdrop-blur-md">
                 <tr>
                   <th class="th rounded-tl-xl">Nama Ruangan</th>
@@ -127,22 +128,22 @@
 
       <!-- ═══ Tab: Divisi ═══ -->
       <div v-if="activeTab === 'divisi'" class="fade-in">
-        <div class="flex items-center justify-between mb-4 px-2">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 px-1 sm:px-2 gap-3 sm:gap-0">
           <div>
-            <h2 class="font-display font-bold text-navy text-2xl drop-shadow-sm">
+            <h2 class="font-display font-bold text-navy text-xl sm:text-2xl drop-shadow-sm">
               Daftar Divisi
             </h2>
-            <p class="text-sm font-medium text-gray-600 mt-1">
+            <p class="text-xs sm:text-sm font-medium text-gray-600 mt-1">
               Pengelompokan jadwal dan pengguna operasional.
             </p>
           </div>
-          <button class="btn-primary" @click="openDivisionModal()">
+          <button class="btn-primary text-sm sm:text-base w-full sm:w-auto" @click="openDivisionModal()">
             ＋ Tambah Divisi
           </button>
         </div>
         <div class="glass-card overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="w-full min-w-[400px]">
+            <table class="w-full min-w-[500px]">
               <thead class="bg-navy/90 backdrop-blur-md">
                 <tr>
                   <th class="th rounded-tl-xl">Nama Divisi</th>
@@ -178,17 +179,17 @@
 
       <!-- ═══ Tab: Pengguna ═══ -->
       <div v-if="activeTab === 'pengguna'" class="fade-in">
-        <div class="flex items-center justify-between mb-4 px-2">
-          <h2 class="font-display font-bold text-navy text-2xl drop-shadow-sm">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 px-1 sm:px-2 gap-3 sm:gap-0">
+          <h2 class="font-display font-bold text-navy text-xl sm:text-2xl drop-shadow-sm">
             Daftar Pengguna
           </h2>
-          <button class="btn-primary" @click="showUserModal = true">
+          <button class="btn-primary text-sm sm:text-base w-full sm:w-auto" @click="showUserModal = true">
             ＋ Tambah Pengguna
           </button>
         </div>
         <div class="glass-card overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="w-full min-w-[700px]">
+            <table class="w-full min-w-[800px]">
               <thead class="bg-navy/90 backdrop-blur-md">
                 <tr>
                   <th class="th rounded-tl-xl">Nama</th>
@@ -234,51 +235,51 @@
 
       <!-- ═══ Tab: Slide TV ═══ -->
       <div v-if="activeTab === 'slides'" class="fade-in">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 px-2 gap-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 px-1 sm:px-2 gap-3 sm:gap-0">
           <div>
-            <h2 class="font-display font-bold text-navy text-2xl drop-shadow-sm">
+            <h2 class="font-display font-bold text-navy text-xl sm:text-2xl drop-shadow-sm">
               Manajemen Slide TV
             </h2>
-            <p class="text-sm font-medium text-gray-600 mt-1">
+            <p class="text-xs sm:text-sm font-medium text-gray-600 mt-1">
               Foto-foto ini akan muncul bergantian saat tidak ada kegiatan di TV.
             </p>
           </div>
-          <label class="btn-primary cursor-pointer flex items-center gap-2 shrink-0">
+          <label class="btn-primary cursor-pointer flex items-center justify-center gap-2 w-full sm:w-auto shrink-0 text-sm sm:text-base">
             <span v-if="uploadingSlide" class="animate-pulse">⏳ Mengunggah...</span>
             <span v-else>＋ Upload Foto</span>
             <input type="file" accept="image/*" class="hidden" @change="handleUploadSlide" :disabled="uploadingSlide" />
           </label>
         </div>
 
-        <!-- Notifikasi Error Kustom -->
         <transition name="fade">
-          <div v-if="slideError" class="mb-4 mx-2 px-4 py-3 bg-red-50/90 backdrop-blur-sm border border-red-200 rounded-xl text-sm font-bold text-red-600 shadow-sm flex items-center justify-between">
+          <div v-if="slideError" class="mb-4 mx-1 sm:mx-2 px-4 py-3 bg-red-50/90 backdrop-blur-sm border border-red-200 rounded-xl text-sm font-bold text-red-600 shadow-sm flex items-center justify-between">
             <span>⚠ {{ slideError }}</span>
             <button @click="slideError = ''" class="text-red-400 hover:text-red-700">✕</button>
           </div>
         </transition>
 
-        <div class="glass-card p-6">
+        <div class="glass-card p-4 sm:p-6">
           <div v-if="loadingSlides" class="py-12 text-center text-gray-600 font-medium animate-pulse">
             Memuat daftar slide...
           </div>
 
           <div v-else-if="slides.length === 0" class="py-16 text-center">
             <div class="text-5xl mb-4 drop-shadow-md">🖼️</div>
-            <p class="text-gray-600 font-medium text-lg">Belum ada foto slide yang diunggah.</p>
+            <p class="text-gray-600 font-medium text-base sm:text-lg">Belum ada foto slide yang diunggah.</p>
           </div>
 
-          <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          <!-- Grid responsif: 1 kolom di HP, 2 di tablet, 3-4 di Desktop -->
+          <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
             <div
               v-for="slide in slides"
               :key="slide.id"
               class="group relative rounded-2xl overflow-hidden border border-white/60 bg-white/40 shadow-sm aspect-video"
             >
               <img :src="slide.url" class="w-full h-full object-cover" alt="Slide Preview" />
-              <div class="absolute inset-0 bg-navy/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center p-3">
-                <!-- Ubah event klik menjadi modal konfirmasi -->
+              <!-- Di HP tombol hapus selalu terlihat (opacity-100), di Desktop muncul saat hover -->
+              <div class="absolute inset-0 bg-navy/20 sm:bg-navy/60 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-all flex items-end sm:items-center justify-center p-3 pb-4 sm:pb-3">
                 <button
-                  class="btn-sm-del bg-red-600 text-white border-none hover:bg-red-700 shadow-md"
+                  class="btn-sm-del bg-red-600 text-white border-none hover:bg-red-700 shadow-lg w-full sm:w-auto text-sm py-2 sm:py-1"
                   @click="confirmDeleteSlide(slide)"
                 >
                   Hapus Foto
@@ -290,301 +291,227 @@
       </div>
     </main>
 
-    <!-- ── Edit Jadwal Modal ── -->
-    <ScheduleModal
-      v-model="showEditModal"
-      :schedule="editTarget"
-      :rooms="rooms"
-      @saved="fetchJadwal"
-      @conflict="onConflict"
-    />
+    <!-- ── Semua Modal (Sudah responsif secara bawaan dari Tailwind max-w) ── -->
+    <ScheduleModal v-model="showEditModal" :schedule="editTarget" :rooms="rooms" @saved="fetchJadwal" @conflict="onConflict" />
 
-    <!-- ── Delete Jadwal Confirm ── -->
     <transition name="fade">
-      <div
-        v-if="showDeleteConfirm"
-        class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm"
-        @click.self="showDeleteConfirm = false"
-      >
+      <div v-if="showDeleteConfirm" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm" @click.self="showDeleteConfirm = false">
         <div class="w-full max-w-sm glass-modal overflow-hidden">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-200">
             <h2 class="font-display font-bold text-navy">Hapus Jadwal</h2>
-            <button
-              class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition"
-              @click="showDeleteConfirm = false"
-            >✕</button>
+            <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition" @click="showDeleteConfirm = false">✕</button>
           </div>
-          <div class="px-6 py-5 text-sm text-gray-700 leading-relaxed font-medium">
-            Jadwal
-            <strong class="text-gray-900 font-bold">{{ deleteTarget?.agenda }}</strong>
-            akan dihapus permanen.
+          <div class="px-5 sm:px-6 py-5 text-sm text-gray-700 leading-relaxed font-medium">
+            Jadwal <strong class="text-gray-900 font-bold">{{ deleteTarget?.agenda }}</strong> akan dihapus permanen.
           </div>
-          <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
-            <button class="btn-secondary" @click="showDeleteConfirm = false">Batal</button>
-            <button class="btn-danger" :disabled="deleting" @click="doDelete">
-              {{ deleting ? "Menghapus..." : "Ya, Hapus" }}
-            </button>
+          <div class="px-5 sm:px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
+            <button class="btn-secondary text-sm" @click="showDeleteConfirm = false">Batal</button>
+            <button class="btn-danger text-sm" :disabled="deleting" @click="doDelete">{{ deleting ? "Menghapus..." : "Ya, Hapus" }}</button>
           </div>
         </div>
       </div>
     </transition>
 
-    <!-- ── Tambah Pengguna Modal ── -->
     <transition name="fade">
-      <div
-        v-if="showUserModal"
-        class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm"
-        @click.self="showUserModal = false"
-      >
+      <div v-if="showUserModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm" @click.self="showUserModal = false">
         <transition name="slide-up">
           <div v-if="showUserModal" class="w-full max-w-md glass-modal overflow-hidden">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 class="font-display font-bold text-navy">Tambah Pengguna Baru</h2>
-              <button
-                class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition"
-                @click="showUserModal = false"
-              >✕</button>
+            <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-200">
+              <h2 class="font-display font-bold text-navy text-lg">Tambah Pengguna Baru</h2>
+              <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition" @click="showUserModal = false">✕</button>
             </div>
-            <div class="px-6 py-5 space-y-4">
+            <div class="px-5 sm:px-6 py-5 space-y-3 sm:space-y-4">
               <div>
-                <label class="form-label font-bold text-gray-700">Nama Lengkap <span class="text-red-500">*</span></label>
-                <input v-model="userForm.nama" class="form-control glass-input" placeholder="Contoh: Budi Santoso" />
+                <label class="form-label font-bold text-gray-700 text-sm">Nama Lengkap <span class="text-red-500">*</span></label>
+                <input v-model="userForm.nama" class="form-control glass-input text-sm" placeholder="Contoh: Budi Santoso" />
               </div>
               <div>
-                <label class="form-label font-bold text-gray-700">Username <span class="text-red-500">*</span></label>
-                <input v-model="userForm.username" class="form-control glass-input" placeholder="Contoh: budi.santoso" />
+                <label class="form-label font-bold text-gray-700 text-sm">Username <span class="text-red-500">*</span></label>
+                <input v-model="userForm.username" class="form-control glass-input text-sm" placeholder="Contoh: budi.santoso" />
               </div>
               <div>
-                <label class="form-label font-bold text-gray-700">Password <span class="text-red-500">*</span></label>
-                <input v-model="userForm.password" type="password" class="form-control glass-input" placeholder="Minimal 6 karakter" />
+                <label class="form-label font-bold text-gray-700 text-sm">Password <span class="text-red-500">*</span></label>
+                <input v-model="userForm.password" type="password" class="form-control glass-input text-sm" placeholder="Minimal 6 karakter" />
               </div>
               <div>
-                <label class="form-label font-bold text-gray-700">Role</label>
-                <select v-model="userForm.role" class="form-control glass-input">
+                <label class="form-label font-bold text-gray-700 text-sm">Role</label>
+                <select v-model="userForm.role" class="form-control glass-input text-sm">
                   <option value="staff">Staff</option>
                   <option value="pic">PIC</option>
                 </select>
               </div>
               <div>
-                <label class="form-label font-bold text-gray-700">Divisi <span class="text-red-500">*</span></label>
-                <select v-model="userForm.division_id" class="form-control glass-input">
+                <label class="form-label font-bold text-gray-700 text-sm">Divisi <span class="text-red-500">*</span></label>
+                <select v-model="userForm.division_id" class="form-control glass-input text-sm">
                   <option value="" disabled>Pilih divisi...</option>
-                  <option v-for="division in divisions" :key="division.id" :value="division.id">
-                    {{ division.nama }}
-                  </option>
+                  <option v-for="division in divisions" :key="division.id" :value="division.id">{{ division.nama }}</option>
                 </select>
               </div>
               <transition name="fade">
-                <div v-if="userError" class="text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+                <div v-if="userError" class="text-xs sm:text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
                   {{ userError }}
                 </div>
               </transition>
             </div>
-            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
-              <button class="btn-secondary" @click="showUserModal = false">Batal</button>
-              <button class="btn-primary" :disabled="savingUser" @click="doCreateUser">
-                {{ savingUser ? "Menyimpan..." : "Tambahkan" }}
-              </button>
+            <div class="px-5 sm:px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
+              <button class="btn-secondary text-sm" @click="showUserModal = false">Batal</button>
+              <button class="btn-primary text-sm" :disabled="savingUser" @click="doCreateUser">{{ savingUser ? "Menyimpan..." : "Tambahkan" }}</button>
             </div>
           </div>
         </transition>
       </div>
     </transition>
 
-    <!-- ── Atur Password Modal ── -->
     <transition name="fade">
-      <div
-        v-if="showPasswordModal"
-        class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm"
-        @click.self="showPasswordModal = false"
-      >
+      <div v-if="showPasswordModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm" @click.self="showPasswordModal = false">
         <transition name="slide-up">
           <div v-if="showPasswordModal" class="w-full max-w-md glass-modal overflow-hidden">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-200">
               <div>
-                <p class="text-[11px] uppercase tracking-widest text-blue-600 font-bold">Pemulihan Akun</p>
-                <h2 class="font-display font-bold text-navy">Atur Password</h2>
+                <p class="text-[10px] sm:text-[11px] uppercase tracking-widest text-blue-600 font-bold">Pemulihan Akun</p>
+                <h2 class="font-display font-bold text-navy text-lg">Atur Password</h2>
               </div>
-              <button
-                class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition"
-                @click="showPasswordModal = false"
-              >✕</button>
+              <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition" @click="showPasswordModal = false">✕</button>
             </div>
-            <div class="px-6 py-5 space-y-4">
-              <p class="text-sm text-gray-600 font-medium">
-                Atur password baru untuk <strong class="text-gray-900">{{ passwordTarget?.nama }}</strong>.
-              </p>
+            <div class="px-5 sm:px-6 py-5 space-y-4">
+              <p class="text-xs sm:text-sm text-gray-600 font-medium">Atur password baru untuk <strong class="text-gray-900">{{ passwordTarget?.nama }}</strong>.</p>
               <div>
-                <label class="form-label font-bold text-gray-700">Password Baru <span class="text-red-500">*</span></label>
-                <input v-model="passwordForm.password" type="password" class="form-control glass-input" placeholder="Minimal 6 karakter" @keyup.enter="savePassword" />
+                <label class="form-label font-bold text-gray-700 text-sm">Password Baru <span class="text-red-500">*</span></label>
+                <input v-model="passwordForm.password" type="password" class="form-control glass-input text-sm" placeholder="Minimal 6 karakter" @keyup.enter="savePassword" />
               </div>
-              <div v-if="passwordError" class="text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+              <div v-if="passwordError" class="text-xs sm:text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
                 {{ passwordError }}
               </div>
             </div>
-            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
-              <button class="btn-secondary" @click="showPasswordModal = false">Batal</button>
-              <button class="btn-primary" :disabled="savingPassword" @click="savePassword">
-                {{ savingPassword ? "Menyimpan..." : "Simpan Password" }}
-              </button>
+            <div class="px-5 sm:px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
+              <button class="btn-secondary text-sm" @click="showPasswordModal = false">Batal</button>
+              <button class="btn-primary text-sm" :disabled="savingPassword" @click="savePassword">{{ savingPassword ? "Menyimpan..." : "Simpan Password" }}</button>
             </div>
           </div>
         </transition>
       </div>
     </transition>
 
-    <!-- ── Delete User Confirm ── -->
     <transition name="fade">
-      <div
-        v-if="showDeleteUserConfirm"
-        class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm"
-        @click.self="showDeleteUserConfirm = false"
-      >
+      <div v-if="showDeleteUserConfirm" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm" @click.self="showDeleteUserConfirm = false">
         <div class="w-full max-w-sm glass-modal overflow-hidden">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-200">
             <h2 class="font-display font-bold text-navy">Hapus Pengguna</h2>
-            <button
-              class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition"
-              @click="showDeleteUserConfirm = false"
-            >✕</button>
+            <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition" @click="showDeleteUserConfirm = false">✕</button>
           </div>
-          <div class="px-6 py-5 text-sm text-gray-700 leading-relaxed font-medium">
+          <div class="px-5 sm:px-6 py-5 text-sm text-gray-700 leading-relaxed font-medium">
             Pengguna <strong class="text-gray-900 font-bold">{{ deleteUserTarget?.nama }}</strong> akan dihapus beserta semua jadwalnya.
           </div>
-          <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
-            <button class="btn-secondary" @click="showDeleteUserConfirm = false">Batal</button>
-            <button class="btn-danger" :disabled="deletingUser" @click="doDeleteUser">
-              {{ deletingUser ? "Menghapus..." : "Ya, Hapus" }}
-            </button>
+          <div class="px-5 sm:px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
+            <button class="btn-secondary text-sm" @click="showDeleteUserConfirm = false">Batal</button>
+            <button class="btn-danger text-sm" :disabled="deletingUser" @click="doDeleteUser">{{ deletingUser ? "Menghapus..." : "Ya, Hapus" }}</button>
           </div>
         </div>
       </div>
     </transition>
 
-    <!-- ── Tambah/Edit Ruangan Modal ── -->
     <transition name="fade">
-      <div
-        v-if="showRoomModal"
-        class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm"
-        @click.self="showRoomModal = false"
-      >
+      <div v-if="showRoomModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm" @click.self="showRoomModal = false">
         <transition name="slide-up">
           <div v-if="showRoomModal" class="w-full max-w-md glass-modal overflow-hidden">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 class="font-display font-bold text-navy">{{ roomEditTarget ? "Edit Ruangan" : "Tambah Ruangan Baru" }}</h2>
+            <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-200">
+              <h2 class="font-display font-bold text-navy text-lg">{{ roomEditTarget ? "Edit Ruangan" : "Tambah Ruangan" }}</h2>
               <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition" @click="showRoomModal = false">✕</button>
             </div>
-            <div class="px-6 py-5 space-y-4">
+            <div class="px-5 sm:px-6 py-5 space-y-3 sm:space-y-4">
               <div>
-                <label class="form-label font-bold text-gray-700">Nama Ruangan <span class="text-red-500">*</span></label>
-                <input v-model="roomForm.nama" class="form-control glass-input" placeholder="Contoh: Ruang Rapat Lantai 3" />
+                <label class="form-label font-bold text-gray-700 text-sm">Nama Ruangan <span class="text-red-500">*</span></label>
+                <input v-model="roomForm.nama" class="form-control glass-input text-sm" placeholder="Contoh: Ruang Rapat Lantai 3" />
               </div>
               <div>
-                <label class="form-label font-bold text-gray-700">Kapasitas</label>
-                <input v-model.number="roomForm.kapasitas" type="number" min="0" class="form-control glass-input" placeholder="Contoh: 20" />
+                <label class="form-label font-bold text-gray-700 text-sm">Kapasitas</label>
+                <input v-model.number="roomForm.kapasitas" type="number" min="0" class="form-control glass-input text-sm" placeholder="Contoh: 20" />
               </div>
               <div>
-                <label class="form-label font-bold text-gray-700">Keterangan</label>
-                <textarea v-model="roomForm.keterangan" class="form-control glass-input" rows="3" placeholder="Fasilitas atau keterangan ruangan"></textarea>
+                <label class="form-label font-bold text-gray-700 text-sm">Keterangan</label>
+                <textarea v-model="roomForm.keterangan" class="form-control glass-input text-sm" rows="3" placeholder="Fasilitas atau keterangan ruangan"></textarea>
               </div>
-              <div v-if="roomError" class="text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+              <div v-if="roomError" class="text-xs sm:text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
                 {{ roomError }}
               </div>
             </div>
-            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
-              <button class="btn-secondary" @click="showRoomModal = false">Batal</button>
-              <button class="btn-primary" :disabled="savingRoom" @click="saveRoom">
-                {{ savingRoom ? "Menyimpan..." : roomEditTarget ? "Simpan Perubahan" : "Tambahkan" }}
-              </button>
+            <div class="px-5 sm:px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
+              <button class="btn-secondary text-sm" @click="showRoomModal = false">Batal</button>
+              <button class="btn-primary text-sm" :disabled="savingRoom" @click="saveRoom">{{ savingRoom ? "Menyimpan..." : roomEditTarget ? "Simpan Perubahan" : "Tambahkan" }}</button>
             </div>
           </div>
         </transition>
       </div>
     </transition>
 
-    <!-- ── Hapus Ruangan Confirm ── -->
     <transition name="fade">
       <div v-if="showDeleteRoomConfirm" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm" @click.self="showDeleteRoomConfirm = false">
         <div class="w-full max-w-sm glass-modal overflow-hidden">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-200">
             <h2 class="font-display font-bold text-navy">Hapus Ruangan</h2>
             <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition" @click="showDeleteRoomConfirm = false">✕</button>
           </div>
-          <div class="px-6 py-5 text-sm text-gray-700 leading-relaxed font-medium">
+          <div class="px-5 sm:px-6 py-5 text-sm text-gray-700 leading-relaxed font-medium">
             Ruangan <strong class="text-gray-900 font-bold">{{ deleteRoomTarget?.nama }}</strong> akan dihapus permanen.
           </div>
-          <div v-if="roomDeleteError" class="px-6 text-sm font-bold text-red-600">
+          <div v-if="roomDeleteError" class="px-5 sm:px-6 text-xs sm:text-sm font-bold text-red-600">
             {{ roomDeleteError }}
           </div>
-          <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
-            <button class="btn-secondary" @click="showDeleteRoomConfirm = false">Batal</button>
-            <button class="btn-danger" :disabled="deletingRoom" @click="doDeleteRoom">
-              {{ deletingRoom ? "Menghapus..." : "Ya, Hapus" }}
-            </button>
+          <div class="px-5 sm:px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
+            <button class="btn-secondary text-sm" @click="showDeleteRoomConfirm = false">Batal</button>
+            <button class="btn-danger text-sm" :disabled="deletingRoom" @click="doDeleteRoom">{{ deletingRoom ? "Menghapus..." : "Ya, Hapus" }}</button>
           </div>
         </div>
       </div>
     </transition>
 
-    <!-- ── Tambah/Edit Divisi Modal ── -->
     <transition name="fade">
       <div v-if="showDivisionModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm" @click.self="showDivisionModal = false">
         <div class="w-full max-w-md glass-modal overflow-hidden">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h2 class="font-display font-bold text-navy">{{ divisionEditTarget ? "Edit Divisi" : "Tambah Divisi" }}</h2>
+          <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-200">
+            <h2 class="font-display font-bold text-navy text-lg">{{ divisionEditTarget ? "Edit Divisi" : "Tambah Divisi" }}</h2>
             <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100" @click="showDivisionModal = false">✕</button>
           </div>
-          <div class="px-6 py-5 space-y-4">
+          <div class="px-5 sm:px-6 py-5 space-y-3 sm:space-y-4">
             <div>
-              <label class="form-label font-bold text-gray-700">Nama Divisi</label>
-              <input v-model="divisionForm.nama" class="form-control glass-input" placeholder="Contoh: Teknik" />
+              <label class="form-label font-bold text-gray-700 text-sm">Nama Divisi</label>
+              <input v-model="divisionForm.nama" class="form-control glass-input text-sm" placeholder="Contoh: Teknik" />
             </div>
             <div>
-              <label class="form-label font-bold text-gray-700">Kode Divisi</label>
-              <input v-model="divisionForm.kode" class="form-control glass-input" placeholder="Contoh: TEK" />
+              <label class="form-label font-bold text-gray-700 text-sm">Kode Divisi</label>
+              <input v-model="divisionForm.kode" class="form-control glass-input text-sm" placeholder="Contoh: TEK" />
             </div>
-            <div v-if="divisionError" class="text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+            <div v-if="divisionError" class="text-xs sm:text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
               {{ divisionError }}
             </div>
           </div>
-          <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
-            <button class="btn-secondary" @click="showDivisionModal = false">Batal</button>
-            <button class="btn-primary" :disabled="savingDivision" @click="saveDivision">
-              {{ savingDivision ? "Menyimpan..." : "Simpan" }}
-            </button>
+          <div class="px-5 sm:px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
+            <button class="btn-secondary text-sm" @click="showDivisionModal = false">Batal</button>
+            <button class="btn-primary text-sm" :disabled="savingDivision" @click="saveDivision">{{ savingDivision ? "Menyimpan..." : "Simpan" }}</button>
           </div>
         </div>
       </div>
     </transition>
 
-        <!-- ── Hapus Slide Confirm Modal ── -->
     <transition name="fade">
       <div v-if="showDeleteSlideConfirm" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-navy/60 backdrop-blur-sm" @click.self="showDeleteSlideConfirm = false">
         <div class="w-full max-w-sm glass-modal overflow-hidden">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h2 class="font-display font-bold text-navy">Hapus Foto Slide</h2>
+          <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-200">
+            <h2 class="font-display font-bold text-navy text-lg">Hapus Foto Slide</h2>
             <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition" @click="showDeleteSlideConfirm = false">✕</button>
           </div>
-          <div class="px-6 py-5 text-sm text-gray-700 leading-relaxed font-medium">
+          <div class="px-5 sm:px-6 py-5 text-sm text-gray-700 leading-relaxed font-medium">
             Apakah Anda yakin ingin menghapus foto slide ini? Foto akan hilang dari tayangan TV secara permanen.
           </div>
-          <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
-            <button class="btn-secondary" @click="showDeleteSlideConfirm = false">Batal</button>
-            <button class="btn-danger" :disabled="deletingSlide" @click="doDeleteSlide">
-              {{ deletingSlide ? "Menghapus..." : "Ya, Hapus" }}
-            </button>
+          <div class="px-5 sm:px-6 py-4 border-t border-gray-200 flex justify-end gap-2.5">
+            <button class="btn-secondary text-sm" @click="showDeleteSlideConfirm = false">Batal</button>
+            <button class="btn-danger text-sm" :disabled="deletingSlide" @click="doDeleteSlide">{{ deletingSlide ? "Menghapus..." : "Ya, Hapus" }}</button>
           </div>
         </div>
       </div>
     </transition>
 
-    <!-- Conflict Warning -->
-    <ConflictWarning
-      v-model="showConflict"
-      :conflict="conflictData.conflict"
-      :jam-mulai="conflictData.jam_mulai"
-      :jam-selesai="conflictData.jam_selesai"
-    />
+    <ConflictWarning v-model="showConflict" :conflict="conflictData.conflict" :jam-mulai="conflictData.jam_mulai" :jam-selesai="conflictData.jam_selesai" />
   </div>
 </template>
 
